@@ -19,8 +19,62 @@
   }
 }
 
+/* Base typography and vertical rhythm */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI,
+    Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Headings scale and spacing */
+:where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-geist-sans);
+  color: #111827;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 0.75em;
+}
+
+:where(p, ul, ol, blockquote) {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+ul, ol { padding-left: 1.25rem; }
+
+a { text-decoration: none; }
+
+/* Utility classes used across the app */
+.container-custom { @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl; }
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-md bg-gray-900 text-white px-5 py-2.5 text-sm font-medium transition-colors hover:bg-gray-800 active:bg-gray-900;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-900 px-5 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 active:bg-gray-100;
+}
+
+.link-muted { @apply text-gray-600 hover:text-gray-900 transition-colors; }
+
+.card { @apply rounded-xl border border-gray-200 bg-white shadow-sm; }
+.card-hover { @apply transition-shadow hover:shadow-md; }
+
+.bg-secondary { @apply bg-gray-50; }
+
+/* Display heading utilities */
+.h-section { @apply text-4xl md:text-6xl font-semibold tracking-tight text-gray-900; }
+.h-sub { @apply text-lg md:text-xl text-gray-600; }
+
+/* Consistent spacing between stacked elements inside sections */
+section > .container-custom > * + * { margin-top: 1.25rem; }
+
+/* Fine-tune nav height spacing for consistency */
+nav .link-muted { @apply text-sm; }
+nav .btn-primary, nav .btn-secondary { @apply h-10 px-4; }
