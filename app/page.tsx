@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, Play, Star, ArrowRight, Menu, X, Zap, Shield, Cpu, Palette, Download, Users } from 'lucide-react';
 import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
+import { CompareDemo } from '@/components/CompareDemo';
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,8 +33,8 @@ export default function Home() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
+              <a href="#home" className="link-muted">Home</a>
               <a href="#features" className="link-muted">Features</a>
-              <a href="#testimonials" className="link-muted">Reviews</a>
               <a href="#pricing" className="link-muted">Pricing</a>
               <a href="#contact" className="link-muted">Contact</a>
             </div>
@@ -68,8 +69,8 @@ export default function Home() {
           {isMenuOpen && (
             <div className="md:hidden border-t border-gray-200 bg-white">
               <div className="px-2 pt-2 pb-3 space-y-1">
+                <a href="#home" className="block px-3 py-2 link-muted">Home</a>
                 <a href="#features" className="block px-3 py-2 link-muted">Features</a>
-                <a href="#testimonials" className="block px-3 py-2 link-muted">Reviews</a>
                 <a href="#pricing" className="block px-3 py-2 link-muted">Pricing</a>
                 <a href="#contact" className="block px-3 py-2 link-muted">Contact</a>
                 <div className="px-3 py-2 space-y-2">
@@ -93,16 +94,17 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex items-center">
+      <section id="home" className="relative min-h-screen flex flex-col items-center justify-center pt-32 pb-20">
         <div className="container-custom">
-          <div className="max-w-3xl">
-            <h1 className="h-section mb-4">
-              Your PC Instantly Faster
-            </h1>
-            <p className="h-sub mb-8">
-              Transform your existing system into a streamlined powerhouse. Professional optimization service that delivers speed, security, and elegance.
-            </p>
-            <div className="flex items-center gap-4">
+          {/* Text Content */}
+            <div className="text-center mb-16 max-w-4xl mx-auto">
+              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">
+                Rebuilt for Speed. Refined for You.
+              </h1>
+              <p className="h-sub mb-8">
+                We build your Windows 11 the way it should be — clean, fast, and worry-free.
+              </p>
+            <div className="flex items-center justify-center gap-4">
               {isSignedIn ? (
                 <button className="btn-primary flex items-center">
                   <Download className="mr-2 w-4 h-4" /> Start Optimization
@@ -119,6 +121,9 @@ export default function Home() {
               </button>
             </div>
           </div>
+          
+          {/* Full Width Comparison Component */}
+          <CompareDemo />
         </div>
       </section>
 
@@ -130,95 +135,117 @@ export default function Home() {
             <p className="text-gray-600 max-w-2xl mx-auto">Professional optimization that maximizes performance, enhances security, and delivers clean efficiency—without compromise.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-            <div className="card p-10 md:p-12 card-hover">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="card p-6 md:p-8 card-hover">
               <Zap className="w-6 h-6 text-gray-900 mb-4" />
-              <h3 className="font-semibold mb-2">Boot Optimization</h3>
-              <p className="text-sm text-gray-600">Dramatically reduce startup times and improve system responsiveness.</p>
+              <h3 className="font-semibold mb-2">Stop Waiting for Your Computer</h3>
+              <p className="text-sm text-gray-600">Boot in 15 seconds instead of 2+ minutes. No more wasted time.</p>
             </div>
-            <div className="card p-10 md:p-12 card-hover">
+            <div className="card p-6 md:p-8 card-hover">
               <Shield className="w-6 h-6 text-gray-900 mb-4" />
-              <h3 className="font-semibold mb-2">Security Enhancement</h3>
-              <p className="text-sm text-gray-600">Advanced security protocols with optimized performance impact.</p>
+              <h3 className="font-semibold mb-2">Trust What You Install</h3>
+              <p className="text-sm text-gray-600">Free from the spyware other builds sneak in. Free builds cost your privacy — ours don't.</p>
             </div>
-            <div className="card p-10 md:p-12 card-hover">
+            <div className="card p-6 md:p-8 card-hover">
               <Cpu className="w-6 h-6 text-gray-900 mb-4" />
-              <h3 className="font-semibold mb-2">Resource Optimization</h3>
-              <p className="text-sm text-gray-600">Minimize memory usage while maintaining full functionality.</p>
+              <h3 className="font-semibold mb-2">Work Without Lag</h3>
+              <p className="text-sm text-gray-600">Experience Windows that never freezes or lags.</p>
             </div>
-            <div className="card p-10 md:p-12 card-hover">
+            <div className="card p-6 md:p-8 card-hover">
               <Users className="w-6 h-6 text-gray-900 mb-4" />
-              <h3 className="font-semibold mb-2">Expert Service</h3>
-              <p className="text-sm text-gray-600">Professional optimization tailored to your specific needs.</p>
+              <h3 className="font-semibold mb-2">Support That Actually Helps</h3>
+              <p className="text-sm text-gray-600">Real humans answer your questions. No chatbots or runarounds.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-28">
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-28 bg-secondary">
         <div className="container-custom">
           <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Client Results</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Real feedback from professionals who demand peak performance.</p>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Choose Your Plan</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Professional Windows 11 optimization tailored to your needs.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="card p-10 md:p-12">
-              <div className="flex items-center mb-6 text-gray-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4" />
-                ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Tiny 11 Access */}
+            <div className="card p-8 text-center flex flex-col">
+              <h3 className="text-xl font-semibold mb-2">Tiny 11 Access</h3>
+              <div className="text-3xl font-bold mb-2">$4<span className="text-lg text-gray-500">/month</span></div>
+              <div className="text-sm text-gray-500 mb-4 h-5">Billed annually</div>
+              <p className="text-sm text-gray-600 mb-6 h-16 flex items-center justify-center text-center">Hobbyists who want all public builds hassle-free.</p>
+              
+              <ul className="text-sm text-gray-600 mb-8 space-y-2 text-left flex-grow">
+                <li>• All public Tiny 11 builds for 1 year</li>
+                <li>• Regular updates included</li>
+                <li>• Ready-to-use prebuilt systems</li>
+                <li>• Priority email updates</li>
+              </ul>
+              
+              <div className="mt-auto">
+                {isSignedIn ? (
+                  <button className="btn-primary w-full">Get Started</button>
+                ) : (
+                  <SignUpButton mode="modal">
+                    <button className="btn-primary w-full">Get Started</button>
+                  </SignUpButton>
+                )}
               </div>
-              <p className="text-gray-700 mb-6 text-sm">
-                "The optimization service transformed my aging hardware. Incredible performance gains."
-              </p>
-              <div className="text-sm text-gray-500">John S., Developer</div>
             </div>
-            <div className="card p-10 md:p-12">
-              <div className="flex items-center mb-6 text-gray-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4" />
-                ))}
-              </div>
-              <p className="text-gray-700 mb-6 text-sm">
-                "Professional service delivered exactly what was promised. Clean, fast, reliable."
-              </p>
-              <div className="text-sm text-gray-500">Maria J., Designer</div>
-            </div>
-            <div className="card p-10 md:p-12">
-              <div className="flex items-center mb-6 text-gray-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4" />
-                ))}
-              </div>
-              <p className="text-gray-700 mb-6 text-sm">
-                "Expert optimization without compromise. Maximum efficiency, zero bloat."
-              </p>
-              <div className="text-sm text-gray-500">David W., IT</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section id="pricing" className="py-28 bg-secondary">
-        <div className="container-custom text-center">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">Ready to Optimize?</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-10">Start with our consultation or explore premium optimization packages.</p>
-          <div className="flex items-center justify-center gap-4">
-            {isSignedIn ? (
-              <button className="btn-primary flex items-center">
-                <Download className="mr-2 w-4 h-4" /> Start Service
-              </button>
-            ) : (
-              <SignUpButton mode="modal">
-                <button className="btn-primary flex items-center">
-                  <Download className="mr-2 w-4 h-4" /> Start Service
-                </button>
-              </SignUpButton>
-            )}
-            <button className="btn-secondary">View Packages</button>
+            {/* Tiny 11 Custom Starter */}
+            <div className="card p-8 text-center border-2 border-gray-900 relative flex flex-col">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-4 py-1 rounded-full text-sm">Best Value</div>
+              <h3 className="text-xl font-semibold mb-2">Tiny 11 Custom Starter</h3>
+              <div className="text-3xl font-bold mb-2">$240</div>
+              <div className="text-sm text-gray-500 mb-4 h-5"></div>
+              <p className="text-sm text-gray-600 mb-6 h-16 flex items-center justify-center text-center">You get a custom Tiny 11, built just for your PC + 1 year free access to public builds.</p>
+              
+              <ul className="text-sm text-gray-600 mb-8 space-y-2 text-left flex-grow">
+                <li>• 1 custom Tiny 11 build tailored to you</li>
+                <li>• 1-year access to all public builds</li>
+                <li>• Privacy presets, performance tweaks</li>
+                <li>• Priority human support</li>
+              </ul>
+              
+              <div className="mt-auto">
+                {isSignedIn ? (
+                  <button className="btn-primary w-full">Get Started</button>
+                ) : (
+                  <SignUpButton mode="modal">
+                    <button className="btn-primary w-full">Get Started</button>
+                  </SignUpButton>
+                )}
+              </div>
+            </div>
+
+            {/* Tiny 11 Elite */}
+            <div className="card p-8 text-center flex flex-col">
+              <h3 className="text-xl font-semibold mb-2">Tiny 11 Elite</h3>
+              <div className="text-3xl font-bold mb-2">$399</div>
+              <div className="text-sm text-gray-500 mb-4 h-5"></div>
+              <p className="text-sm text-gray-600 mb-6 h-16 flex items-center justify-center text-center">Fully personalized Tiny 11s for your PCs, with lifetime public builds.</p>
+              
+              <ul className="text-sm text-gray-600 mb-8 space-y-2 text-left flex-grow">
+                <li>• 2 custom Tiny 11 builds</li>
+                <li>• Lifetime access to all public builds</li>
+                <li>• Premium customization: privacy, performance, apps</li>
+                <li>• Priority support with fast turnaround</li>
+                <li>• Early access to experimental features</li>
+              </ul>
+              
+              <div className="mt-auto">
+                {isSignedIn ? (
+                  <button className="btn-primary w-full">Get Started</button>
+                ) : (
+                  <SignUpButton mode="modal">
+                    <button className="btn-primary w-full">Get Started</button>
+                  </SignUpButton>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
