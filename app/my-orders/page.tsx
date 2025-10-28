@@ -2,15 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Download, Calendar, Cpu, HardDrive, MemoryStick, CheckCircle, Crown, Package } from "lucide-react";
+import { Download, CheckCircle, Crown, Package } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { OSRelease } from "@/lib/supabase";
+import Link from "next/link";
+import Image from "next/image";
 
-interface StandalonePurchase {
-  route: string;
-  email: string;
-  created_at: string;
-}
 
 interface SubscriptionStatus {
   hasSubscription: boolean;
@@ -127,7 +124,7 @@ export default function MyOrdersPage() {
           <div className="max-w-2xl mx-auto text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Sign In Required</h1>
             <p className="text-gray-600 mb-8">Please sign in to view your orders and downloads.</p>
-            <a href="/" className="btn-primary">Go to Homepage</a>
+            <Link href="/" className="btn-primary">Go to Homepage</Link>
           </div>
         </div>
       </div>
@@ -214,8 +211,8 @@ export default function MyOrdersPage() {
               <div className="text-center py-12 bg-gray-50 rounded-2xl">
                 <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No Purchases Yet</h3>
-                <p className="text-gray-600 mb-6">You haven't purchased any individual builds yet.</p>
-                <a href="/#releases" className="btn-primary">Browse Available Builds</a>
+                <p className="text-gray-600 mb-6">You haven&apos;t purchased any individual builds yet.</p>
+                <Link href="/#releases" className="btn-primary">Browse Available Builds</Link>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -228,10 +225,11 @@ export default function MyOrdersPage() {
                       {/* Thumbnail */}
                       <div className="aspect-video bg-gray-100 relative">
                         {thumbnailUrl ? (
-                          <img
+                          <Image
                             src={thumbnailUrl}
                             alt={release.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               if (youtubeId) {
@@ -241,7 +239,9 @@ export default function MyOrdersPage() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                            <Cpu className="w-12 h-12 text-gray-400" />
+                            <div className="w-12 h-12 bg-gray-300 rounded flex items-center justify-center">
+                              <span className="text-gray-500 text-xs">No Image</span>
+                            </div>
                           </div>
                         )}
                         <div className="absolute top-2 right-2">
@@ -292,11 +292,11 @@ export default function MyOrdersPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Subscription Benefits</h3>
               <p className="text-gray-700 mb-4">
                 With your active subscription, you can download any Tiny 11 build from our releases page, 
-                even if you haven't purchased it individually.
+                even if you haven&apos;t purchased it individually.
               </p>
-              <a href="/#releases" className="btn-primary">
+              <Link href="/#releases" className="btn-primary">
                 Browse All Available Builds
-              </a>
+              </Link>
             </div>
           )}
         </div>

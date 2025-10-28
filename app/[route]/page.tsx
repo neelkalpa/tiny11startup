@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { useUser, useClerk, UserButton } from '@clerk/nextjs';
-import { Play, Download, Cpu, HardDrive, MemoryStick, Calendar, Settings } from "lucide-react";
+import { useUser, useClerk } from '@clerk/nextjs';
+import { Play, Download, Calendar } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 import { OSRelease } from "@/lib/supabase";
 import { LicenseKeyModal } from "@/components/LicenseKeyModal";
 import { DownloadChoiceModal } from "@/components/DownloadChoiceModal";
@@ -30,10 +32,8 @@ export default function OSReleasePage() {
   
   const {
     isModalOpen,
-    isFirstTimeUser,
     checkUserAndShowModal,
     handleLicenseSubmit,
-    processLicenseKey,
     processSkip,
     closeModal,
   } = useLicenseValidation();
@@ -226,7 +226,7 @@ export default function OSReleasePage() {
         }
 
         setOsRelease(data.release);
-      } catch (err) {
+      } catch {
         setError('Failed to load OS release');
       } finally {
         setLoading(false);
@@ -319,7 +319,7 @@ export default function OSReleasePage() {
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-gray-900 mb-2">OS Release Not Found</h1>
           <p className="text-gray-600 mb-4">The requested OS release could not be found.</p>
-          <a href="/" className="btn-primary">Return Home</a>
+          <Link href="/" className="btn-primary">Return Home</Link>
         </div>
       </div>
     );
@@ -350,10 +350,11 @@ export default function OSReleasePage() {
                   >
                     <div className="relative rounded-2xl overflow-hidden bg-gray-900/50 border border-white/10 hover:border-rose-400/30 transition-colors group cursor-pointer">
                       <div className="aspect-video relative">
-                        <img
+                        <Image
                           src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
                           alt={`${osRelease.name} preview`}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                           onLoad={() => console.log('Thumbnail loaded successfully')}
                           onError={(e) => {
                             console.log('Maxres thumbnail failed, trying hqdefault');
@@ -542,7 +543,7 @@ export default function OSReleasePage() {
                   This service provides optimization tools to create tailored Windows 11 installations. Microsoft Windows 11 must be obtained separately through official channels.
                 </p>
                 <p className="text-gray-800 font-medium">
-                  <strong>All purchases are final and cannot be refunded.</strong> It is the customer's responsibility to ensure their PC meets requirements and can run the software.
+                  <strong>All purchases are final and cannot be refunded.</strong> It is the customer&apos;s responsibility to ensure their PC meets requirements and can run the software.
                 </p>
               </div>
             </div>

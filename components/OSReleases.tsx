@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Play, Download, ExternalLink, Calendar, Search } from "lucide-react";
+import { Play, Calendar, Search } from "lucide-react";
+import Image from "next/image";
 import { OSRelease } from "@/lib/supabase";
 import Link from "next/link";
 
@@ -43,8 +44,7 @@ export function OSReleases() {
     } else {
       const filtered = releases.filter(release =>
         release.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        release.cpu.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        release.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        release.cpu.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredReleases(filtered);
     }
@@ -167,10 +167,11 @@ export function OSReleases() {
                 <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video mb-3">
                   {youtubeId ? (
                     <div className="relative w-full h-full">
-                      <img
+                      <Image
                         src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
                         alt={`${release.name} preview`}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                         onLoad={() => console.log('Thumbnail loaded successfully')}
                         onError={(e) => {
                           console.log('Maxres thumbnail failed, trying hqdefault');
@@ -250,7 +251,7 @@ export function OSReleases() {
       {/* No Results Message */}
       {searchQuery && filteredReleases.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-gray-600">No releases found matching "{searchQuery}"</p>
+          <p className="text-gray-600">No releases found matching &quot;{searchQuery}&quot;</p>
           <button
             onClick={() => setSearchQuery("")}
             className="mt-2 text-primary hover:underline"

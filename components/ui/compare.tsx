@@ -26,7 +26,6 @@ export function Compare({
 }: CompareProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const autoplayRef = useRef<NodeJS.Timeout | null>(null);
@@ -164,11 +163,9 @@ export function Compare({
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseEnter={() => {
-        setIsHovering(true);
         setIsAutoplayPaused(true);
       }}
       onMouseLeave={() => {
-        setIsHovering(false);
         setIsAutoplayPaused(false);
       }}
       style={{ userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none' }}

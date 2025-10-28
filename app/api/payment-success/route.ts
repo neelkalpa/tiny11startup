@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     let email: string;
     try {
       email = decryptEmail(encryptedId);
-    } catch (error) {
+    } catch {
       return NextResponse.json({ 
         success: false, 
         error: 'Invalid transaction ID' 

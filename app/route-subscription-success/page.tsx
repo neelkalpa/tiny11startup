@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
-export default function RouteSubscriptionSuccessPage() {
+function RouteSubscriptionSuccessContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'duplicate'>('loading');
   const [message, setMessage] = useState('');
@@ -100,12 +101,12 @@ export default function RouteSubscriptionSuccessPage() {
               <XCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-gray-900 mb-2">Subscription Error</h1>
               <p className="text-gray-600 mb-6">{message}</p>
-              <a
+              <Link
                 href="/"
                 className="btn-primary inline-block"
               >
                 Return to Home
-              </a>
+              </Link>
             </>
           )}
 
@@ -114,17 +115,32 @@ export default function RouteSubscriptionSuccessPage() {
               <XCircle className="w-16 h-16 text-yellow-600 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-gray-900 mb-2">Subscription Already Processed</h1>
               <p className="text-gray-600 mb-6">{message}</p>
-              <a
+              <Link
                 href="/"
                 className="btn-primary inline-block"
               >
                 Return to Home
-              </a>
+              </Link>
             </>
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RouteSubscriptionSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <RouteSubscriptionSuccessContent />
+    </Suspense>
   );
 }
 

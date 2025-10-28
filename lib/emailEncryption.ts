@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 
 const ALGORITHM = 'aes-256-cbc';
-const KEY_LENGTH = 32;
 
 export function encryptEmail(email: string): string {
   const key = process.env.ENCRYPT_EMAIL_KEY;
@@ -57,7 +56,7 @@ export function decryptEmail(encryptedId: string): string {
     const email = decrypted.slice(10, -10);
     
     return email;
-  } catch (error) {
+  } catch {
     throw new Error('Failed to decrypt email');
   }
 }

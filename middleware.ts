@@ -1,36 +1,24 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-export default clerkMiddleware((auth, req) => {
-  const { pathname } = req.nextUrl;
-  
-  // Public routes that don't require authentication
-  const publicRoutes = [
-    '/',
-    '/api/license',
-    '/api/debug-env',
-    '/api/test-supabase',
-    '/api/paypal',
-    '/api/payment-success',
-    '/api/test-standalone-purchases',
-    '/api/check-standalone-purchase',
-    '/api/download-creator',
-    '/api/download-installer',
-    '/api/subscription-success',
-    '/api/my-purchases',
-    '/api/subscription-status',
-    '/api/test-standalone-purchases',
-    '/api/my-plan',
-    '/api/update-license-key'
-  ];
-  
-  // Check if current path is public
-  const isPublic = publicRoutes.some(route => pathname.startsWith(route));
-  
-  // If not public, protect the route
-  if (!isPublic) {
-    auth().protect();
-  }
-});
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/api/license(.*)',
+  '/api/debug-env(.*)',
+  '/api/test-supabase(.*)',
+  '/api/paypal(.*)',
+  '/api/payment-success(.*)',
+  '/api/test-standalone-purchases(.*)',
+  '/api/check-standalone-purchase(.*)',
+  '/api/download-creator(.*)',
+  '/api/download-installer(.*)',
+  '/api/subscription-success(.*)',
+  '/api/my-purchases(.*)',
+  '/api/subscription-status(.*)',
+  '/api/my-plan(.*)',
+  '/api/update-license-key(.*)'
+]);
+
+export default clerkMiddleware();
 
 export const config = {
   matcher: [

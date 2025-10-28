@@ -3,15 +3,16 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { route: string } }
+  { params }: { params: Promise<{ route: string }> }
 ) {
   try {
-    console.log('Looking for route:', params.route);
+    const { route } = await params;
+    console.log('Looking for route:', route);
     
     const { data, error } = await supabase
       .from('os_release')
       .select('*')
-      .eq('route', params.route)
+      .eq('route', route)
       .single();
 
     console.log('Supabase response:', { data, error });

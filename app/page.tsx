@@ -2,18 +2,15 @@
 
 import { useState, useEffect } from "react";
 import {
-  ChevronDown,
   Play,
-  Star,
-  ArrowRight,
   Zap,
   Shield,
   Cpu,
-  Palette,
   Download,
   Users,
 } from "lucide-react";
-import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
+import { useUser, SignUpButton } from "@clerk/nextjs";
+import Link from "next/link";
 import { CompareDemo } from "@/components/CompareDemo";
 import { LicenseKeyModal } from "@/components/LicenseKeyModal";
 import { Navbar } from "@/components/Navbar";
@@ -146,7 +143,7 @@ export default function Home() {
               <h3 className="font-semibold mb-2">Trust What You Install</h3>
               <p className="text-sm text-gray-600">
                 Free from the spyware other builds sneak in. Free builds cost
-                your privacy — ours don't.
+                your privacy — ours don&apos;t.
               </p>
             </div>
             <div className="card p-6 md:p-8 card-hover">
@@ -338,9 +335,9 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="/faq" className="hover:text-gray-900 transition-colors">
+                  <Link href="/faq" className="hover:text-gray-900 transition-colors">
                     FAQ
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

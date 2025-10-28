@@ -90,7 +90,7 @@ export function LicenseKeyModal({
         <div className="px-6 py-6">
           <div className="mb-6">
             <p className="text-sm text-gray-600 mb-3">
-              Welcome! We found that you're signing in for the first time.
+              Welcome! We found that you&apos;re signing in for the first time.
             </p>
             <p className="text-sm text-gray-600 mb-4">
               Do you have a license key from HT & Apidus? If so, enter it below

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Navbar } from "@/components/Navbar";
 import { CheckCircle, Crown, Key, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 interface PlanData {
   expirydate: string | null;
@@ -36,8 +37,8 @@ export default function MyPlanPage() {
       }
       const data = await res.json();
       setPlan({ expirydate: data.expirydate ?? null, license_key: data.license_key ?? null });
-    } catch (e) {
-      setError("We couldn’t load your plan. Please try again.");
+    } catch {
+      setError("We couldn't load your plan. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -64,8 +65,8 @@ export default function MyPlanPage() {
       if (typeof window !== 'undefined') {
         window.location.reload();
       }
-    } catch (e) {
-      setError("We couldn’t update your license key. Please try again.");
+    } catch {
+      setError("We couldn't update your license key. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -92,7 +93,7 @@ export default function MyPlanPage() {
           <div className="max-w-2xl mx-auto text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Sign In Required</h1>
             <p className="text-gray-600 mb-8">Please sign in to view your plan.</p>
-            <a href="/" className="btn-primary">Go to Homepage</a>
+            <Link href="/" className="btn-primary">Go to Homepage</Link>
           </div>
         </div>
       </div>

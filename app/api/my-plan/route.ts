@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 function getSupabaseClient() {
   const supabaseUrl = process.env.SUPABASE_URL_TINY11 || 'https://your-project.supabase.co';
   const supabaseKey = process.env.SUPABASE_KEY_TINY11 || 'your-anon-key';
-  const { createClient } = require('@supabase/supabase-js');
   return createClient(supabaseUrl, supabaseKey);
 }
 

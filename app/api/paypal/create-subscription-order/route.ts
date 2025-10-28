@@ -3,7 +3,7 @@ import { encryptEmail } from '@/lib/emailEncryption';
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, description, amount, subscriptionType, email } = await request.json();
+    const { description, amount, subscriptionType, email } = await request.json();
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     const orderResult = await orderResponse.json();
     
     // Find approval URL
-    const approvalLink = orderResult.links?.find((link: any) => link.rel === 'approve');
+    const approvalLink = orderResult.links?.find((link: { rel: string; href: string }) => link.rel === 'approve');
     
     if (!approvalLink) {
       return NextResponse.json({ error: 'No approval URL found' }, { status: 500 });
