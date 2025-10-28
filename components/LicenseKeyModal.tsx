@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Key, CheckCircle, AlertCircle } from "lucide-react";
+import { Key, CheckCircle, AlertCircle } from "lucide-react";
 
 interface LicenseKeyModalProps {
   isOpen: boolean;
@@ -72,31 +72,18 @@ export function LicenseKeyModal({
     <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-gray-200 overflow-hidden">
         <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
-                <Key className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  License Key Verification
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Verify your HT & Apidus license
-                </p>
-              </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+              <Key className="w-5 h-5 text-white" />
             </div>
-            <button
-              onClick={onClose}
-              disabled={error && !success}
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                error && !success
-                  ? "text-gray-300 cursor-not-allowed bg-gray-100"
-                  : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                License Key Verification
+              </h2>
+              <p className="text-sm text-gray-600">
+                Verify your HT & Apidus license
+              </p>
+            </div>
           </div>
         </div>
 

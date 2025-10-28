@@ -12,12 +12,20 @@ export function useLicenseValidation() {
       const response = await fetch(
         `/api/license?email=${encodeURIComponent(email)}&action=checkUser`
       );
-      const data = await response.json();
-
+      
+      // Check if response is ok and content type is JSON
       if (!response.ok) {
-        console.error("Error checking user:", data.error);
+        console.error("Error checking user: HTTP", response.status);
         return;
       }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Error checking user: Response is not JSON");
+        return;
+      }
+
+      const data = await response.json();
 
       if (!data.exists) {
         // First time user - show license key modal
@@ -48,6 +56,18 @@ export function useLicenseValidation() {
             licenseKey,
           }),
         });
+
+        // Check if response is ok and content type is JSON
+        if (!response.ok) {
+          console.error("Error validating license: HTTP", response.status);
+          return { valid: false, error: "Server error" };
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("Error validating license: Response is not JSON");
+          return { valid: false, error: "Invalid response format" };
+        }
 
         const data = await response.json();
 
@@ -83,12 +103,18 @@ export function useLicenseValidation() {
           }),
         });
 
-        const data = await response.json();
-
         if (!response.ok) {
-          console.error("Error processing license:", data.error);
+          console.error("Error processing license: HTTP", response.status);
           return false;
         }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("Error processing license: Response is not JSON");
+          return false;
+        }
+
+        const data = await response.json();
 
         return data.valid;
       } catch (error) {
@@ -112,11 +138,18 @@ export function useLicenseValidation() {
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        console.error("Error processing skip:", data.error);
+        console.error("Error processing skip: HTTP", response.status);
+        return;
       }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Error processing skip: Response is not JSON");
+        return;
+      }
+
+      const data = await response.json();
     } catch (error) {
       console.error("Error processing skip:", error);
     }

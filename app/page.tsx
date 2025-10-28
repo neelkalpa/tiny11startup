@@ -6,8 +6,6 @@ import {
   Play,
   Star,
   ArrowRight,
-  Menu,
-  X,
   Zap,
   Shield,
   Cpu,
@@ -18,11 +16,12 @@ import {
 import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import { CompareDemo } from "@/components/CompareDemo";
 import { LicenseKeyModal } from "@/components/LicenseKeyModal";
+import { Navbar } from "@/components/Navbar";
+import { OSReleases } from "@/components/OSReleases";
 import { useLicenseValidation } from "@/hooks/useLicenseValidation";
 
 export default function Home() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [subscriptionLoading, setSubscriptionLoading] = useState<string | null>(null);
   const { isSignedIn, user } = useUser();
   const {
     isModalOpen,
@@ -34,13 +33,6 @@ export default function Home() {
     closeModal,
   } = useLicenseValidation();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Check for first-time users when they sign in
   useEffect(() => {
@@ -49,106 +41,44 @@ export default function Home() {
     }
   }, [isSignedIn, user, checkUserAndShowModal]);
 
+  // Handle subscription payment
+  const handleSubscriptionPayment = async (subscriptionType: string, amount: number, name: string) => {
+    if (!user?.emailAddresses?.[0]?.emailAddress) return;
+    
+    setSubscriptionLoading(subscriptionType);
+    try {
+      const response = await fetch('/api/paypal/create-subscription-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          description: name,
+          amount: amount,
+          subscriptionType: subscriptionType,
+          email: user.emailAddresses[0].emailAddress,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.approvalUrl) {
+          window.location.href = data.approvalUrl;
+        }
+      } else {
+        console.error('Failed to create subscription order');
+      }
+    } catch (error) {
+      console.error('Error creating subscription order:', error);
+    } finally {
+      setSubscriptionLoading(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      {/* Navigation */}
-      <nav
-        className={`fixed top-0 w-full z-50 transition-colors duration-200 ${
-          scrolled
-            ? "bg-white/90 backdrop-blur border-b border-gray-200"
-            : "bg-transparent"
-        }`}
-      >
-        <div className="container-custom">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <a href="#" className="flex items-center space-x-3">
-              <div className="text-2xl font-semibold tracking-tight">
-                Tiny 11
-              </div>
-            </a>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#home" className="link-muted">
-                Home
-              </a>
-              <a href="#features" className="link-muted">
-                Features
-              </a>
-              <a href="#pricing" className="link-muted">
-                Pricing
-              </a>
-              <a href="#contact" className="link-muted">
-                Contact
-              </a>
-            </div>
-
-            {/* CTA Button */}
-            <div className="hidden md:flex items-center space-x-4">
-              {isSignedIn ? (
-                <UserButton afterSignOutUrl="/" />
-              ) : (
-                <>
-                  <SignInButton mode="modal">
-                    <button className="btn-secondary">Sign In</button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="btn-primary">Get Started</button>
-                  </SignUpButton>
-                </>
-              )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 bg-white">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                <a href="#home" className="block px-3 py-2 link-muted">
-                  Home
-                </a>
-                <a href="#features" className="block px-3 py-2 link-muted">
-                  Features
-                </a>
-                <a href="#pricing" className="block px-3 py-2 link-muted">
-                  Pricing
-                </a>
-                <a href="#contact" className="block px-3 py-2 link-muted">
-                  Contact
-                </a>
-                <div className="px-3 py-2 space-y-2">
-                  {isSignedIn ? (
-                    <UserButton afterSignOutUrl="/" />
-                  ) : (
-                    <>
-                      <SignInButton mode="modal">
-                        <button className="btn-secondary w-full">
-                          Sign In
-                        </button>
-                      </SignInButton>
-                      <SignUpButton mode="modal">
-                        <button className="btn-primary w-full">
-                          Get Started
-                        </button>
-                      </SignUpButton>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section
@@ -239,6 +169,22 @@ export default function Home() {
         </div>
       </section>
 
+      {/* OS Releases Section */}
+      <section id="releases" className="py-28 bg-white">
+        <div className="container-custom">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
+              Available OS Releases
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Explore our collection of optimized Windows 11 builds, each tailored for specific use cases and hardware configurations.
+            </p>
+          </div>
+          
+          <OSReleases />
+        </div>
+      </section>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-28 bg-secondary">
         <div className="container-custom">
@@ -274,7 +220,13 @@ export default function Home() {
 
               <div className="mt-auto pt-6">
                 {isSignedIn ? (
-                  <button className="btn-primary w-full">Get Started</button>
+                  <button 
+                    onClick={() => handleSubscriptionPayment('48', 48, 'Tiny 11 Access - 1 Year')}
+                    disabled={subscriptionLoading === '48'}
+                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {subscriptionLoading === '48' ? 'Processing...' : 'Subscribe'}
+                  </button>
                 ) : (
                   <SignUpButton mode="modal">
                     <button className="btn-primary w-full">Get Started</button>
@@ -307,7 +259,13 @@ export default function Home() {
 
               <div className="mt-auto pt-6">
                 {isSignedIn ? (
-                  <button className="btn-primary w-full">Get Started</button>
+                  <button 
+                    onClick={() => handleSubscriptionPayment('240', 240, 'Tiny 11 Custom Starter')}
+                    disabled={subscriptionLoading === '240'}
+                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {subscriptionLoading === '240' ? 'Processing...' : 'Get Started'}
+                  </button>
                 ) : (
                   <SignUpButton mode="modal">
                     <button className="btn-primary w-full">Get Started</button>
@@ -336,7 +294,13 @@ export default function Home() {
 
               <div className="mt-auto pt-6">
                 {isSignedIn ? (
-                  <button className="btn-primary w-full">Get Started</button>
+                  <button 
+                    onClick={() => handleSubscriptionPayment('399', 399, 'Tiny 11 Elite - Lifetime')}
+                    disabled={subscriptionLoading === '399'}
+                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {subscriptionLoading === '399' ? 'Processing...' : 'Go Elite'}
+                  </button>
                 ) : (
                   <SignUpButton mode="modal">
                     <button className="btn-primary w-full">Get Started</button>
@@ -351,59 +315,30 @@ export default function Home() {
       {/* Footer */}
       <footer id="contact" className="py-16 border-t border-gray-200">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div className="md:col-span-2">
               <div className="text-2xl font-semibold mb-3">Tiny 11</div>
               <p className="text-gray-600 mb-4 max-w-md text-sm">
                 Professional system optimization service. Transform your
                 existing setup into peak performance.
               </p>
+              <p className="text-gray-600 max-w-md text-sm">
+                For support and consultation & brand collabs, contact us at{' '}
+                <a href="mailto:support@tiny11.ch" className="text-gray-800 hover:text-gray-900 hover:underline">
+                  support@tiny11.ch
+                </a>
+              </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-3 text-sm">Services</h3>
+              <h3 className="font-semibold mb-3 text-sm">Support & Consultation</h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>
-                  <a href="#" className="hover:text-gray-900 transition-colors">
-                    Optimization
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-gray-900 transition-colors">
-                    Packages
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-gray-900 transition-colors">
-                    Consultation
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-gray-900 transition-colors">
-                    Support
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-3 text-sm">Support</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>
-                  <a href="#" className="hover:text-gray-900 transition-colors">
-                    Documentation
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-gray-900 transition-colors">
+                  <a href="https://discord.gg/xBhDZ3abbx" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
                     Community
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-gray-900 transition-colors">
-                    Contact
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-gray-900 transition-colors">
+                  <a href="/faq" className="hover:text-gray-900 transition-colors">
                     FAQ
                   </a>
                 </li>

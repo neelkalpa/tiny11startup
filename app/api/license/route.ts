@@ -1,11 +1,24 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-// Server-side Supabase client with service role key
-const supabaseUrl = process.env.SUPABASE_URL_TINY11!;
-const supabaseServiceKey = process.env.SUPABASE_KEY_TINY11!;
+// Function to get Supabase client
+function getSupabaseClient() {
+  // Try to get from environment variables first
+  let supabaseUrl = process.env.SUPABASE_URL_TINY11;
+  let supabaseServiceKey = process.env.SUPABASE_KEY_TINY11;
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  // If not found in environment, use hardcoded values as fallback
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.log("Environment variables not found, using fallback values");
+    supabaseUrl = "https://slklnczznxssritvwudb.supabase.co";
+    supabaseServiceKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsa2xuY3p6bnhzc3JpdHZ3dWRiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTk0NzQ3OCwiZXhwIjoyMDcxNTIzNDc4fQ.FEutpV3BTilg2Da5QEFrgRqJ9XCthYAggjnsrawN98Y";
+  }
+
+  console.log("Using Supabase URL:", supabaseUrl);
+  console.log("Using Supabase Key:", supabaseServiceKey ? "PRESENT" : "MISSING");
+
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 // Helper function to normalize license key (remove dashes and spaces)
 function normalizeLicenseKey(key: string): string {
@@ -41,25 +54,36 @@ function formatLicenseKey(normalizedKey: string): string | null {
 
 // Check if user exists in oauth table
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const email = searchParams.get("email");
-  const action = searchParams.get("action");
-
-  if (!email) {
-    return NextResponse.json({ error: "Email is required" }, { status: 400 });
-  }
-
   try {
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get("email");
+    const action = searchParams.get("action");
+
+    console.log("License API called with:", { email, action });
+
+    if (!email) {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    }
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error("Supabase client not created");
+      return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+    }
+
     if (action === "checkUser") {
+      console.log("Checking user in oauth table for email:", email);
       const { data, error } = await supabase
         .from("oauth")
         .select("*")
         .eq("email", email)
         .single();
 
+      console.log("Supabase response:", { data, error });
+
       if (error && error.code !== "PGRST116") {
         console.error("Error checking existing user:", error);
-        return NextResponse.json({ error: "Database error" }, { status: 500 });
+        return NextResponse.json({ error: "Database error", details: error.message }, { status: 500 });
       }
 
       return NextResponse.json({ exists: !!data, user: data });
@@ -67,9 +91,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
-    console.error("API error:", error);
+    console.error("License API error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -78,6 +102,11 @@ export async function GET(request: NextRequest) {
 // Validate license key and process user data
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+    }
+
     const body = await request.json();
     const { action, email, licenseKey } = body;
 
