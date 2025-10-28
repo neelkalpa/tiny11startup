@@ -2,17 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decryptEmail } from '@/lib/emailEncryption';
 import { createClient } from '@supabase/supabase-js';
 
-// Function to get Supabase client (same as license API)
+// Function to get Supabase client from environment variables
 function getSupabaseClient() {
-  // Try to get from environment variables first
-  let supabaseUrl = process.env.SUPABASE_URL_TINY11;
-  let supabaseServiceKey = process.env.SUPABASE_KEY_TINY11;
+  const supabaseUrl = process.env.SUPABASE_URL_TINY11;
+  const supabaseServiceKey = process.env.SUPABASE_KEY_TINY11;
 
-  // If not found in environment, use hardcoded values as fallback
   if (!supabaseUrl || !supabaseServiceKey) {
-    console.log("Environment variables not found, using fallback values");
-    supabaseUrl = "https://slklnczznxssritvwudb.supabase.co";
-    supabaseServiceKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsa2xuY3p6bnhzc3JpdHZ3dWRiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTk0NzQ3OCwiZXhwIjoyMDcxNTIzNDc4fQ.FEutpV3BTilg2Da5QEFrgRqJ9XCthYAggjnsrawN98Y";
+    throw new Error('Missing Supabase configuration. Please set SUPABASE_URL_TINY11 and SUPABASE_KEY_TINY11.');
   }
 
   return createClient(supabaseUrl, supabaseServiceKey);
@@ -21,8 +17,6 @@ function getSupabaseClient() {
 export async function POST(request: NextRequest) {
   try {
     const { route, downloadType, encryptedId, token } = await request.json();
-
-    console.log('Payment success API called with:', { route, downloadType, encryptedId, token });
 
     if (!route || !downloadType || !encryptedId || !token) {
       return NextResponse.json({ 
@@ -52,11 +46,8 @@ export async function POST(request: NextRequest) {
     // Decrypt the email
     let email: string;
     try {
-      console.log('Attempting to decrypt:', encryptedId);
       email = decryptEmail(encryptedId);
-      console.log('Decrypted email:', email);
     } catch (error) {
-      console.error('Decryption error:', error);
       return NextResponse.json({ 
         success: false, 
         error: 'Invalid transaction ID' 
@@ -73,7 +64,6 @@ export async function POST(request: NextRequest) {
       });
 
     if (paypalError) {
-      console.error('Error adding to paypal_transactions:', paypalError);
       return NextResponse.json({ 
         success: false, 
         error: 'Failed to process transaction' 
@@ -81,7 +71,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Add to standalone_purchases table
-    console.log('Adding to standalone_purchases:', { route, email });
     const { error: purchaseError } = await supabase
       .from('standalone_purchases')
       .insert({
@@ -90,16 +79,11 @@ export async function POST(request: NextRequest) {
       });
 
     if (purchaseError) {
-      console.error('Error adding to standalone_purchases:', purchaseError);
       return NextResponse.json({ 
         success: false, 
         error: 'Failed to record purchase' 
       }, { status: 500 });
     }
-
-    console.log('Successfully added to standalone_purchases');
-
-    console.log('Payment processing completed successfully');
     
     return NextResponse.json({ 
       success: true, 
