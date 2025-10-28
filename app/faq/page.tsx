@@ -15,18 +15,18 @@ const faqData: FAQItem[] = [
   {
     id: 'what-is-tiny11',
     question: 'What exactly is Tiny 11 and why should I care?',
-    answer: 'Tiny 11 is the ONLY production-grade Windows 11 optimization service that transforms your sluggish system into a lightning-fast powerhouse. While Microsoft&apos;s bloated Windows 11 demands 4GB RAM minimum, our Tiny 11 runs flawlessly on just 256MB RAM and 4-6GB storage. This isn&apos;t just "debloating" - it&apos;s a complete system transformation that turns your old hardware into a performance beast. Every second you wait is another second of frustration with your current slow system.',
+    answer: 'Tiny 11 is the ONLY production-grade Windows 11 optimization service that transforms your sluggish system into a lightning-fast powerhouse. While Microsoft\'s bloated Windows 11 demands 4GB RAM minimum, our Tiny 11 runs flawlessly on just 256MB RAM and 4-6GB storage. This isn\'t just "debloating" - it\'s a complete system transformation that turns your old hardware into a performance beast. Every second you wait is another second of frustration with your current slow system.',
     category: 'general'
   },
   {
     id: 'is-this-original-tiny11',
     question: 'Are you the original creators of Tiny 11?',
-    answer: 'YES - We are the ORIGINAL creators. Neel&apos;s Labs (HT & Apidus) launched the first Tiny 11 in 2021, TWO FULL YEARS before NTDEV&apos;s 2023 release. We didn&apos;t just create Tiny 11 - we perfected it through 4 years of relentless optimization. While others jumped on the bandwagon, we&apos;ve been the pioneers, the innovators, the ONLY team that delivers a Tiny 11 safe enough for daily production use. This isn&apos;t just about being first - it&apos;s about being the ONLY ones who got it right.',
+    answer: 'YES - We are the ORIGINAL creators. Neel\'s Labs (HT & Apidus) launched the first Tiny 11 in 2021, TWO FULL YEARS before NTDEV\'s 2023 release. We didn\'t just create Tiny 11 - we perfected it through 4 years of relentless optimization. While others jumped on the bandwagon, we\'ve been the pioneers, the innovators, the ONLY team that delivers a Tiny 11 safe enough for daily production use. This isn\'t just about being first - it\'s about being the ONLY ones who got it right.',
     category: 'general'
   },
   {
     id: 'is-this-ntdev-tiny11',
-    question: 'Is this the same as NTDEV&apos;s Tiny 11?',
+    question: 'Is this the same as NTDEV\'s Tiny 11?',
     answer: 'ABSOLUTELY NOT. NTDEV\'s version is explicitly designed for "virtual deployments and testing only" - their own words. It\'s unstable, unsupported, and dangerous for daily use. Our Tiny 11 is production-grade, battle-tested, and backed by 4 years of continuous development. While NTDEV offers zero support and zero updates, we provide enterprise-level support and regular security updates. The difference? They made a proof-of-concept. We built a business-grade solution.',
     category: 'general'
   },
