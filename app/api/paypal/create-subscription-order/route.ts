@@ -9,6 +9,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
+    // Get the base URL from the request or environment
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+
     // Encrypt the email with padding
     const encryptedEmail = encryptEmail(email);
 
@@ -65,8 +68,8 @@ export async function POST(request: NextRequest) {
         brand_name: 'Tiny 11',
         landing_page: 'NO_PREFERENCE',
         user_action: 'PAY_NOW',
-        return_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/subscription-success?subscriptionType=${subscriptionType}&id=${encryptedEmail}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/subscription-cancelled`,
+        return_url: `${baseUrl}/subscription-success?subscriptionType=${subscriptionType}&id=${encryptedEmail}`,
+        cancel_url: `${baseUrl}/`,
       },
     };
 
