@@ -524,6 +524,20 @@ export default function OSReleasePage() {
                   <span className="text-gray-600">{osRelease.disk} GB</span>
                 </div>
 
+                {osRelease.build_number && (
+                  <div>
+                    <span className="font-medium text-gray-900">Build Number: </span>
+                    <span className="text-gray-600">{osRelease.build_number}</span>
+                  </div>
+                )}
+
+                {osRelease.edition && (
+                  <div>
+                    <span className="font-medium text-gray-900">Windows Edition: </span>
+                    <span className="text-gray-600">{osRelease.edition}</span>
+                  </div>
+                )}
+
                 {osRelease.other_req && osRelease.other_req.split('\n').map((line, index) => (
                   <div key={index}>
                     <span className="text-gray-600">{line}</span>

@@ -39,4 +39,6 @@ export interface OSRelease {
   route: string;
   creator_link: string;
   download_link: string;
+  build_number: string | null;
+  edition: string | null;
 }

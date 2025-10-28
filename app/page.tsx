@@ -30,6 +30,46 @@ export default function Home() {
     closeModal,
   } = useLicenseValidation();
 
+  // Helper: route user to pricing or releases based on subscription
+  const routeBySubscription = async (email: string) => {
+    try {
+      const resp = await fetch(`/api/subscription-status?email=${encodeURIComponent(email)}`);
+      if (!resp.ok) {
+        window.location.href = "/#pricing";
+        return;
+      }
+      const data = await resp.json();
+      if (data?.hasSubscription) {
+        window.location.href = "/#releases";
+      } else {
+        window.location.href = "/#pricing";
+      }
+    } catch {
+      window.location.href = "/#pricing";
+    }
+  };
+
+  // Handle Start Optimization click when signed in
+  const handleStartOptimization = async () => {
+    const email = user?.emailAddresses?.[0]?.emailAddress;
+    if (!email) return;
+    await routeBySubscription(email);
+  };
+
+  // After-auth redirect handler
+  useEffect(() => {
+    if (!isSignedIn) return;
+    const email = user?.emailAddresses?.[0]?.emailAddress;
+    if (!email) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("postAuth") === "start") {
+      // Clean the param from URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("postAuth");
+      window.history.replaceState({}, "", url.toString());
+      routeBySubscription(email);
+    }
+  }, [isSignedIn, user]);
 
   // Check for first-time users when they sign in
   useEffect(() => {
@@ -94,19 +134,19 @@ export default function Home() {
             </p>
             <div className="flex items-center justify-center gap-4">
               {isSignedIn ? (
-                <button className="btn-primary flex items-center">
+                <button className="btn-primary flex items-center" onClick={handleStartOptimization}>
                   <Download className="mr-2 w-4 h-4" /> Start Optimization
                 </button>
               ) : (
-                <SignUpButton mode="modal">
+                <SignUpButton mode="modal" forceRedirectUrl="/?postAuth=start" fallbackRedirectUrl="/?postAuth=start" signInForceRedirectUrl="/?postAuth=start">
                   <button className="btn-primary flex items-center">
                     <Download className="mr-2 w-4 h-4" /> Get Started
                   </button>
                 </SignUpButton>
               )}
-              <button className="btn-secondary flex items-center">
-                <Play className="mr-2 w-4 h-4" /> View Demo
-              </button>
+              <Link href="/#releases" className="btn-secondary flex items-center">
+                <Play className="mr-2 w-4 h-4" /> Try Tiny 11
+              </Link>
             </div>
           </div>
 
