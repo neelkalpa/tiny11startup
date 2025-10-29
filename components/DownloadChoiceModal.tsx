@@ -91,24 +91,14 @@ export function DownloadChoiceModal({
                   <div className="text-xs text-gray-500">One-time</div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <button
-                  onClick={() => handleIndividualClick('creator')}
-                  disabled={individualLoading || subscriptionLoading}
-                  className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Download className="w-4 h-4" />
-                  {individualLoading ? 'Processing...' : 'Download Creator'}
-                </button>
-                <button
-                  onClick={() => handleIndividualClick('installer')}
-                  disabled={individualLoading || subscriptionLoading}
-                  className="w-full btn-secondary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Download className="w-4 h-4" />
-                  {individualLoading ? 'Processing...' : 'Download Installer'}
-                </button>
-              </div>
+              <button
+                onClick={() => handleIndividualClick('creator')}
+                disabled={individualLoading || subscriptionLoading}
+                className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download className="w-4 h-4" />
+                {individualLoading ? 'Processing...' : 'Get Access'}
+              </button>
             </div>
 
             {/* Subscription Option */}
@@ -132,7 +122,7 @@ export function DownloadChoiceModal({
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Zap className="w-4 h-4" />
-                {subscriptionLoading ? 'Processing...' : 'Get Year Access'}
+                {subscriptionLoading ? 'Processing...' : 'Get Yearly Access'}
               </button>
             </div>
           </div>
@@ -156,7 +146,7 @@ export function DownloadChoiceModal({
         title={pendingAction?.type === 'individual' ? 'Purchase Confirmation' : 'Subscription Confirmation'}
         description={
           pendingAction?.type === 'individual' 
-            ? `You are about to purchase ${osReleaseName} for $${individualPrice}. This is a one-time purchase.`
+            ? `You are about to purchase access to ${osReleaseName} for $${individualPrice}. This is a one-time purchase.`
             : `You are about to subscribe to all Tiny 11 builds for $${subscriptionPrice}.`
         }
         actionText={pendingAction?.type === 'individual' ? 'Continue to Payment' : 'Continue to Subscription'}

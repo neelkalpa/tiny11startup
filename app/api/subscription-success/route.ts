@@ -20,16 +20,38 @@ function getSupabaseClient() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { subscriptionType, encryptedId, token } = await request.json();
+    const { subscriptionType, encryptedId, token, orderId } = await request.json();
 
-    console.log('Subscription success API called with:', { subscriptionType, encryptedId, token });
+    console.log('Subscription success API called with:', { subscriptionType, encryptedId, token, orderId });
 
-    if (!subscriptionType || !encryptedId || !token) {
+    if (!subscriptionType || !encryptedId || !token || !orderId) {
       return NextResponse.json({ 
         success: false, 
         error: 'Missing required parameters' 
       }, { status: 400 });
     }
+
+    // First, capture the PayPal payment
+    const captureResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/paypal/capture-order`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ orderId }),
+    });
+
+    if (!captureResponse.ok) {
+      const captureError = await captureResponse.json();
+      console.error('PayPal capture failed:', captureError);
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Failed to capture payment',
+        details: captureError
+      }, { status: 500 });
+    }
+
+    const captureResult = await captureResponse.json();
+    console.log('Subscription payment captured successfully:', captureResult);
 
     // Get Supabase client
     const supabase = getSupabaseClient();
@@ -63,12 +85,12 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Add to paypal_transactions table
+    // Add to paypal_transactions table with capture details
     const { error: paypalError } = await supabase
       .from('paypal_transactions')
       .insert({
         id: encryptedId,
-        transaction_id: token,
+        transaction_id: captureResult.transactionId || token,
         email: email,
       });
 

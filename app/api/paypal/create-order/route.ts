@@ -5,6 +5,14 @@ export async function POST(request: NextRequest) {
   try {
     const { description, amount, downloadType, email, route } = await request.json();
 
+    console.log('PayPal create-order request:', { 
+      description, 
+      amount, 
+      downloadType, 
+      email: email ? email.substring(0, 3) + '***' : 'missing', 
+      route 
+    });
+
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
@@ -13,7 +21,13 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${request.nextUrl.protocol}//${request.nextUrl.host}`;
 
     // Encrypt the email with padding
-    const encryptedEmail = encryptEmail(email);
+    let encryptedEmail: string;
+    try {
+      encryptedEmail = encryptEmail(email);
+    } catch (error) {
+      console.error('Email encryption failed:', error);
+      return NextResponse.json({ error: 'Email encryption failed' }, { status: 500 });
+    }
 
     // Determine PayPal credentials based on MODE
     const mode = process.env.MODE || 'Sandbox';
@@ -25,6 +39,11 @@ export async function POST(request: NextRequest) {
       : process.env.PAYPAL_CLIENT_SECRET_SANDBOX;
 
     if (!clientId || !clientSecret) {
+      console.error('PayPal credentials missing:', { 
+        mode, 
+        hasClientId: !!clientId, 
+        hasClientSecret: !!clientSecret 
+      });
       return NextResponse.json({ error: 'PayPal credentials not configured' }, { status: 500 });
     }
 
@@ -45,7 +64,12 @@ export async function POST(request: NextRequest) {
     );
 
     if (!tokenResponse.ok) {
-      return NextResponse.json({ error: 'Failed to get PayPal access token' }, { status: 500 });
+      const tokenError = await tokenResponse.json();
+      console.error('PayPal token request failed:', tokenError);
+      return NextResponse.json({ 
+        error: 'Failed to get PayPal access token', 
+        details: tokenError 
+      }, { status: 500 });
     }
 
     const tokenData = await tokenResponse.json();
@@ -73,6 +97,15 @@ export async function POST(request: NextRequest) {
       },
     };
 
+    console.log('Creating PayPal order with data:', {
+      amount,
+      description,
+      downloadType,
+      route,
+      baseUrl,
+      encryptedEmail: encryptedEmail.substring(0, 10) + '...'
+    });
+
     const orderResponse = await fetch(
       mode === 'Live'
         ? 'https://api-m.paypal.com/v2/checkout/orders'
@@ -90,8 +123,15 @@ export async function POST(request: NextRequest) {
 
     if (!orderResponse.ok) {
       const errorData = await orderResponse.json();
-      console.error('PayPal order creation failed:', errorData);
-      return NextResponse.json({ error: 'Failed to create PayPal order' }, { status: 500 });
+      console.error('PayPal order creation failed:', {
+        status: orderResponse.status,
+        statusText: orderResponse.statusText,
+        error: errorData
+      });
+      return NextResponse.json({ 
+        error: 'Failed to create PayPal order', 
+        details: errorData 
+      }, { status: 500 });
     }
 
     const orderResult = await orderResponse.json();

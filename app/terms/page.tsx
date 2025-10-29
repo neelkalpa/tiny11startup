@@ -20,7 +20,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
                 <p className="text-gray-700 leading-relaxed">
-                  By accessing and using Tiny 11's services, you accept and agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, you may not use our services. These terms apply to all users of our Windows 11 optimization services.
+                  By accessing and using Tiny 11&apos;s services, you accept and agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, you may not use our services. These terms apply to all users of our Windows 11 optimization services.
                 </p>
               </section>
 
@@ -126,7 +126,7 @@ export default function TermsPage() {
                   <strong>Service Availability:</strong> We strive to maintain high service availability but cannot guarantee uninterrupted access.
                 </p>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  <strong>No Warranties:</strong> Our services are provided "as is" without warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
+                  <strong>No Warranties:</strong> Our services are provided &quot;as is&quot; without warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
                 </p>
                 <p className="text-gray-700 leading-relaxed">
                   <strong>Third-Party Software:</strong> We are not responsible for the performance or compatibility of third-party software or hardware with our optimized builds.
@@ -170,7 +170,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4">13. Changes to Terms</h2>
                 <p className="text-gray-700 leading-relaxed">
-                  We reserve the right to modify these terms at any time. We will notify users of significant changes by posting the updated terms on our website and updating the "Effective Date." Your continued use of our services after changes constitutes acceptance of the updated terms.
+                  We reserve the right to modify these terms at any time. We will notify users of significant changes by posting the updated terms on our website and updating the &quot;Effective Date.&quot; Your continued use of our services after changes constitutes acceptance of the updated terms.
                 </p>
               </section>
 

@@ -17,8 +17,10 @@ function SubscriptionSuccessContent() {
         const subscriptionType = searchParams.get('subscriptionType');
         const encryptedId = searchParams.get('id');
         const token = searchParams.get('token') || searchParams.get('PayerID');
+        // PayPal returns the orderId as 'token' parameter
+        const orderId = searchParams.get('token');
 
-        console.log('Subscription success parameters:', { subscriptionType, encryptedId, token });
+        console.log('Subscription success parameters:', { subscriptionType, encryptedId, token, orderId });
 
         if (!subscriptionType || !encryptedId || !token) {
           setStatus('error');
@@ -36,6 +38,7 @@ function SubscriptionSuccessContent() {
             subscriptionType,
             encryptedId,
             token,
+            orderId,
           }),
         });
 

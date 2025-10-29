@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface CompareProps {
@@ -64,14 +65,14 @@ export function Compare({
     setIsDragging(false);
   };
 
-  const handleMouseMoveGlobal = (e: MouseEvent) => {
+  const handleMouseMoveGlobal = useCallback((e: MouseEvent) => {
     if (!isDragging || !containerRef.current || slideMode !== "drag") return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percentage = (x / rect.width) * 100;
     setSliderPosition(Math.max(0, Math.min(100, percentage)));
-  };
+  }, [isDragging, slideMode]);
 
   useEffect(() => {
     if (isDragging && slideMode === "drag") {
@@ -83,9 +84,9 @@ export function Compare({
       document.removeEventListener("mousemove", handleMouseMoveGlobal);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, slideMode]);
+  }, [isDragging, slideMode, handleMouseMoveGlobal]);
 
-  const startAutoplay = () => {
+  const startAutoplay = useCallback(() => {
     if (autoplayRef.current) {
       clearInterval(autoplayRef.current);
     }
@@ -121,7 +122,7 @@ export function Compare({
         });
       }, autoplayInterval / 100);
     }, 2000);
-  };
+  }, [autoplay, isAutoplayPaused, autoplayInterval]);
 
   useEffect(() => {
     if (autoplay && !isAutoplayPaused) {
@@ -141,7 +142,7 @@ export function Compare({
         clearTimeout(pauseTimeoutRef.current);
       }
     };
-  }, [autoplay, autoplayInterval, isAutoplayPaused]);
+  }, [autoplay, autoplayInterval, isAutoplayPaused, startAutoplay]);
 
   // Cleanup effect
   useEffect(() => {
@@ -172,10 +173,11 @@ export function Compare({
     >
       {/* First Image (Background) */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src={firstImage}
           alt="Before"
-          className={cn("w-full h-full object-cover select-none", firstImageClassName)}
+          fill
+          className={cn("object-cover select-none", firstImageClassName)}
           style={{ userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', pointerEvents: 'none' }}
           draggable={false}
         />
@@ -186,10 +188,11 @@ export function Compare({
         className="absolute inset-0 overflow-hidden"
         style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
       >
-        <img
+        <Image
           src={secondImage}
           alt="After"
-          className={cn("w-full h-full object-cover select-none", secondImageClassname)}
+          fill
+          className={cn("object-cover select-none", secondImageClassname)}
           style={{ userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', pointerEvents: 'none' }}
           draggable={false}
         />

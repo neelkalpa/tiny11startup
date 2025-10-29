@@ -120,9 +120,12 @@ export default function OSReleasePage() {
         const data = await response.json();
         if (data.approvalUrl) {
           window.location.href = data.approvalUrl;
+        } else {
+          console.error('No approval URL in PayPal response:', data);
         }
       } else {
-        console.error('Failed to create PayPal order');
+        const errorData = await response.json();
+        console.error('Failed to create PayPal order:', errorData);
       }
     } catch (error) {
       console.error('Error creating PayPal order:', error);

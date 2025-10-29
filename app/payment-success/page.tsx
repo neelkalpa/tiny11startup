@@ -47,8 +47,10 @@ function PaymentSuccessContent() {
         const downloadType = searchParams.get('downloadtype');
         const encryptedId = searchParams.get('id');
         const token = searchParams.get('token') || searchParams.get('PayerID');
+        // PayPal returns the orderId as 'token' parameter, so we'll use that
+        const orderId = searchParams.get('token');
 
-        console.log('Payment success parameters:', { route, downloadType, encryptedId, token });
+        console.log('Payment success parameters:', { route, downloadType, encryptedId, token, orderId });
 
         if (!route || !downloadType || !encryptedId || !token) {
           setStatus('error');
@@ -67,6 +69,7 @@ function PaymentSuccessContent() {
             downloadType,
             encryptedId,
             token,
+            orderId,
           }),
         });
 

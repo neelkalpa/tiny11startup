@@ -18,8 +18,10 @@ function RouteSubscriptionSuccessContent() {
         const encryptedId = searchParams.get('id');
         const token = searchParams.get('token') || searchParams.get('PayerID');
         const returnRoute = searchParams.get('returnRoute');
+        // PayPal returns the orderId as 'token' parameter
+        const orderId = searchParams.get('token');
 
-        console.log('Route subscription success parameters:', { subscriptionType, encryptedId, token, returnRoute });
+        console.log('Route subscription success parameters:', { subscriptionType, encryptedId, token, returnRoute, orderId });
 
         if (!subscriptionType || !encryptedId || !token) {
           setStatus('error');
@@ -37,6 +39,7 @@ function RouteSubscriptionSuccessContent() {
             subscriptionType,
             encryptedId,
             token,
+            orderId,
           }),
         });
 
