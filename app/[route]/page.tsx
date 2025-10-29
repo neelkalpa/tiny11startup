@@ -9,6 +9,7 @@ import Image from "next/image";
 import { OSRelease } from "@/lib/supabase";
 import { LicenseKeyModal } from "@/components/LicenseKeyModal";
 import { DownloadChoiceModal } from "@/components/DownloadChoiceModal";
+import { TermsAcceptanceModal } from "@/components/TermsAcceptanceModal";
 import { useLicenseValidation } from "@/hooks/useLicenseValidation";
 import { Navbar } from "@/components/Navbar";
 
@@ -29,6 +30,10 @@ export default function OSReleasePage() {
   const [standaloneLoading, setStandaloneLoading] = useState(false);
   const [showDownloadChoice, setShowDownloadChoice] = useState(false);
   const [individualLoading, setIndividualLoading] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState<{
+    downloadType: 'creator' | 'installer';
+  } | null>(null);
   
   const {
     isModalOpen,
@@ -170,6 +175,36 @@ export default function OSReleasePage() {
       setShowDownloadChoice(false);
     }
   }, [user, route]);
+
+  // Handle direct download clicks (show terms modal first)
+  const handleDirectDownloadClick = (downloadType: 'creator' | 'installer') => {
+    setPendingDownload({ downloadType });
+    setShowTermsModal(true);
+  };
+
+  // Handle actual download after terms acceptance
+  const handleDirectDownload = (downloadType: 'creator' | 'installer') => {
+    if (osRelease) {
+      if (downloadType === 'creator') {
+        window.open(osRelease.creator_link, '_blank');
+      } else {
+        window.open(osRelease.download_link, '_blank');
+      }
+    }
+  };
+
+  const handleTermsAccept = () => {
+    if (pendingDownload) {
+      handleDirectDownload(pendingDownload.downloadType);
+      setShowTermsModal(false);
+      setPendingDownload(null);
+    }
+  };
+
+  const handleTermsClose = () => {
+    setShowTermsModal(false);
+    setPendingDownload(null);
+  };
 
   // Auto-open sign-in modal if not authenticated
   useEffect(() => {
@@ -461,25 +496,21 @@ export default function OSReleasePage() {
                   </div>
                 ) : hasValidSubscription || hasStandalonePurchase ? (
                   <>
-                    <a
-                      href={osRelease.creator_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() => handleDirectDownloadClick('creator')}
                       className="btn-primary w-full flex items-center justify-center gap-2 text-lg py-3"
                     >
                       <Download className="w-5 h-5" />
                       Download Creator
-                    </a>
+                    </button>
                     
-                    <a
-                      href={osRelease.download_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() => handleDirectDownloadClick('installer')}
                       className="btn-secondary w-full flex items-center justify-center gap-2 text-lg py-3"
                     >
                       <Download className="w-5 h-5" />
                       Download Installer
-                    </a>
+                    </button>
                   </>
                 ) : (
                   <button
@@ -604,6 +635,21 @@ export default function OSReleasePage() {
           subscriptionLoading={subscriptionLoading}
         />
       )}
+
+      {/* Terms Acceptance Modal for Direct Downloads */}
+      <TermsAcceptanceModal
+        isOpen={showTermsModal}
+        onClose={handleTermsClose}
+        onAccept={handleTermsAccept}
+        title="Download Confirmation"
+        description={
+          pendingDownload 
+            ? `You are about to download the ${pendingDownload.downloadType} for this build. Please review our terms before proceeding.`
+            : ""
+        }
+        actionText="Continue Download"
+        loading={false}
+      />
     </div>
   );
 }

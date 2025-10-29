@@ -3,11 +3,42 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { TermsAcceptanceModal } from '@/components/TermsAcceptanceModal';
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'duplicate'>('loading');
   const [message, setMessage] = useState('');
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState<{
+    route: string | null;
+    downloadType: string | null;
+  } | null>(null);
+
+  const handleDownload = (route: string | null, downloadType: string | null) => {
+    if (route && downloadType) {
+      if (downloadType === '1') {
+        // Creator download
+        window.open('/api/download-creator?route=' + route, '_blank');
+      } else if (downloadType === '2') {
+        // Installer download  
+        window.open('/api/download-installer?route=' + route, '_blank');
+      }
+    }
+  };
+
+  const handleTermsAccept = () => {
+    if (pendingDownload) {
+      handleDownload(pendingDownload.route, pendingDownload.downloadType);
+      setShowTermsModal(false);
+      setPendingDownload(null);
+    }
+  };
+
+  const handleTermsClose = () => {
+    setShowTermsModal(false);
+    setPendingDownload(null);
+  };
 
   useEffect(() => {
     const processPayment = async () => {
@@ -49,13 +80,10 @@ function PaymentSuccessContent() {
           const downloadType = searchParams.get('downloadtype');
           const route = searchParams.get('route');
           
-          // Auto-start download based on type
-          if (downloadType === '1') {
-            // Creator download
-            window.open('/api/download-creator?route=' + route, '_blank');
-          } else if (downloadType === '2') {
-            // Installer download  
-            window.open('/api/download-installer?route=' + route, '_blank');
+          // Show terms modal before download
+          if (downloadType === '1' || downloadType === '2') {
+            setPendingDownload({ route, downloadType });
+            setShowTermsModal(true);
           }
           
           // Redirect back to route page after a short delay
@@ -133,6 +161,21 @@ function PaymentSuccessContent() {
           )}
         </div>
       </div>
+
+      {/* Terms Acceptance Modal for Downloads */}
+      <TermsAcceptanceModal
+        isOpen={showTermsModal}
+        onClose={handleTermsClose}
+        onAccept={handleTermsAccept}
+        title="Download Confirmation"
+        description={
+          pendingDownload 
+            ? `You are about to download the ${pendingDownload.downloadType === '1' ? 'creator' : 'installer'} for this build. Please review our terms before proceeding.`
+            : ""
+        }
+        actionText="Continue Download"
+        loading={false}
+      />
     </div>
   );
 }

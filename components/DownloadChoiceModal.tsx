@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { X, Download, Crown, Zap } from "lucide-react";
+import { TermsAcceptanceModal } from "./TermsAcceptanceModal";
 
 interface DownloadChoiceModalProps {
   isOpen: boolean;
@@ -26,6 +27,37 @@ export function DownloadChoiceModal({
   individualLoading,
   subscriptionLoading,
 }: DownloadChoiceModalProps) {
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<{
+    type: 'individual' | 'subscription';
+    downloadType?: 'creator' | 'installer';
+  } | null>(null);
+
+  const handleIndividualClick = (downloadType: 'creator' | 'installer') => {
+    setPendingAction({ type: 'individual', downloadType });
+    setShowTermsModal(true);
+  };
+
+  const handleSubscriptionClick = () => {
+    setPendingAction({ type: 'subscription' });
+    setShowTermsModal(true);
+  };
+
+  const handleTermsAccept = () => {
+    if (pendingAction?.type === 'individual' && pendingAction.downloadType) {
+      onChooseIndividual(pendingAction.downloadType);
+    } else if (pendingAction?.type === 'subscription') {
+      onChooseSubscription();
+    }
+    setShowTermsModal(false);
+    setPendingAction(null);
+  };
+
+  const handleTermsClose = () => {
+    setShowTermsModal(false);
+    setPendingAction(null);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -61,7 +93,7 @@ export function DownloadChoiceModal({
               </div>
               <div className="space-y-2">
                 <button
-                  onClick={() => onChooseIndividual('creator')}
+                  onClick={() => handleIndividualClick('creator')}
                   disabled={individualLoading || subscriptionLoading}
                   className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -69,7 +101,7 @@ export function DownloadChoiceModal({
                   {individualLoading ? 'Processing...' : 'Download Creator'}
                 </button>
                 <button
-                  onClick={() => onChooseIndividual('installer')}
+                  onClick={() => handleIndividualClick('installer')}
                   disabled={individualLoading || subscriptionLoading}
                   className="w-full btn-secondary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -95,7 +127,7 @@ export function DownloadChoiceModal({
                 </div>
               </div>
               <button
-                onClick={onChooseSubscription}
+                onClick={handleSubscriptionClick}
                 disabled={individualLoading || subscriptionLoading}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
@@ -115,6 +147,21 @@ export function DownloadChoiceModal({
           </div>
         </div>
       </div>
+
+      {/* Terms Acceptance Modal */}
+      <TermsAcceptanceModal
+        isOpen={showTermsModal}
+        onClose={handleTermsClose}
+        onAccept={handleTermsAccept}
+        title={pendingAction?.type === 'individual' ? 'Purchase Confirmation' : 'Subscription Confirmation'}
+        description={
+          pendingAction?.type === 'individual' 
+            ? `You are about to purchase ${osReleaseName} for $${individualPrice}. This is a one-time purchase.`
+            : `You are about to subscribe to all Tiny 11 builds for $${subscriptionPrice}.`
+        }
+        actionText={pendingAction?.type === 'individual' ? 'Continue to Payment' : 'Continue to Subscription'}
+        loading={individualLoading || subscriptionLoading}
+      />
     </div>
   );
 }

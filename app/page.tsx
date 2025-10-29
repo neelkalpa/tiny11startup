@@ -15,10 +15,17 @@ import { CompareDemo } from "@/components/CompareDemo";
 import { LicenseKeyModal } from "@/components/LicenseKeyModal";
 import { Navbar } from "@/components/Navbar";
 import { OSReleases } from "@/components/OSReleases";
+import { TermsAcceptanceModal } from "@/components/TermsAcceptanceModal";
 import { useLicenseValidation } from "@/hooks/useLicenseValidation";
 
 export default function Home() {
   const [subscriptionLoading, setSubscriptionLoading] = useState<string | null>(null);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [pendingSubscription, setPendingSubscription] = useState<{
+    subscriptionType: string;
+    amount: number;
+    name: string;
+  } | null>(null);
   const { isSignedIn, user } = useUser();
   const {
     isModalOpen,
@@ -78,11 +85,17 @@ export default function Home() {
     }
   }, [isSignedIn, user, checkUserAndShowModal]);
 
-  // Handle subscription payment
-  const handleSubscriptionPayment = async (subscriptionType: string, amount: number, name: string) => {
-    if (!user?.emailAddresses?.[0]?.emailAddress) return;
+  // Handle subscription payment initiation (show terms modal first)
+  const handleSubscriptionPayment = (subscriptionType: string, amount: number, name: string) => {
+    setPendingSubscription({ subscriptionType, amount, name });
+    setShowTermsModal(true);
+  };
+
+  // Handle actual subscription payment after terms acceptance
+  const handleSubscriptionPaymentConfirm = async () => {
+    if (!user?.emailAddresses?.[0]?.emailAddress || !pendingSubscription) return;
     
-    setSubscriptionLoading(subscriptionType);
+    setSubscriptionLoading(pendingSubscription.subscriptionType);
     try {
       const response = await fetch('/api/paypal/create-subscription-order', {
         method: 'POST',
@@ -90,10 +103,10 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: name,
-          description: name,
-          amount: amount,
-          subscriptionType: subscriptionType,
+          name: pendingSubscription.name,
+          description: pendingSubscription.name,
+          amount: pendingSubscription.amount,
+          subscriptionType: pendingSubscription.subscriptionType,
           email: user.emailAddresses[0].emailAddress,
         }),
       });
@@ -110,7 +123,15 @@ export default function Home() {
       console.error('Error creating subscription order:', error);
     } finally {
       setSubscriptionLoading(null);
+      setShowTermsModal(false);
+      setPendingSubscription(null);
     }
+  };
+
+  // Handle terms modal close
+  const handleTermsClose = () => {
+    setShowTermsModal(false);
+    setPendingSubscription(null);
   };
 
   return (
@@ -387,15 +408,12 @@ export default function Home() {
               © {new Date().getFullYear()} Tiny 11. All rights reserved.
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-gray-900 transition-colors">
+              <Link href="/privacy" className="hover:text-gray-900 transition-colors">
                 Privacy
-              </a>
-              <a href="#" className="hover:text-gray-900 transition-colors">
+              </Link>
+              <Link href="/terms" className="hover:text-gray-900 transition-colors">
                 Terms
-              </a>
-              <a href="#" className="hover:text-gray-900 transition-colors">
-                Cookies
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -427,6 +445,21 @@ export default function Home() {
           userEmail={user.emailAddresses[0].emailAddress}
         />
       )}
+
+      {/* Terms Acceptance Modal for Subscriptions */}
+      <TermsAcceptanceModal
+        isOpen={showTermsModal}
+        onClose={handleTermsClose}
+        onAccept={handleSubscriptionPaymentConfirm}
+        title="Subscription Confirmation"
+        description={
+          pendingSubscription 
+            ? `You are about to subscribe to ${pendingSubscription.name} for $${pendingSubscription.amount}.`
+            : ""
+        }
+        actionText="Continue to Payment"
+        loading={subscriptionLoading !== null}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Download, CheckCircle, Crown, Package } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { TermsAcceptanceModal } from "@/components/TermsAcceptanceModal";
 import { OSRelease } from "@/lib/supabase";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,6 +21,11 @@ export default function MyOrdersPage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus>({ hasSubscription: false, expiryDate: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState<{
+    route: string;
+    downloadType: 'creator' | 'installer';
+  } | null>(null);
 
   useEffect(() => {
     if (isSignedIn && user?.emailAddresses?.[0]?.emailAddress) {
@@ -100,6 +106,11 @@ export default function MyOrdersPage() {
     return `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
   };
 
+  const handleDownloadClick = (route: string, downloadType: 'creator' | 'installer') => {
+    setPendingDownload({ route, downloadType });
+    setShowTermsModal(true);
+  };
+
   const handleDownload = async (route: string, downloadType: 'creator' | 'installer') => {
     try {
       const response = await fetch(`/api/download-${downloadType}?route=${route}`);
@@ -114,6 +125,19 @@ export default function MyOrdersPage() {
     } catch (error) {
       console.error('Error downloading:', error);
     }
+  };
+
+  const handleTermsAccept = () => {
+    if (pendingDownload) {
+      handleDownload(pendingDownload.route, pendingDownload.downloadType);
+      setShowTermsModal(false);
+      setPendingDownload(null);
+    }
+  };
+
+  const handleTermsClose = () => {
+    setShowTermsModal(false);
+    setPendingDownload(null);
   };
 
   if (!isSignedIn) {
@@ -264,14 +288,14 @@ export default function MyOrdersPage() {
                         {/* Download Buttons */}
                         <div className="space-y-2">
                           <button
-                            onClick={() => handleDownload(release.route, 'creator')}
+                            onClick={() => handleDownloadClick(release.route, 'creator')}
                             className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
                           >
                             <Download className="w-3 h-3" />
                             <span>Creator</span>
                           </button>
                           <button
-                            onClick={() => handleDownload(release.route, 'installer')}
+                            onClick={() => handleDownloadClick(release.route, 'installer')}
                             className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
                           >
                             <Download className="w-3 h-3" />
@@ -301,6 +325,21 @@ export default function MyOrdersPage() {
           )}
         </div>
       </div>
+
+      {/* Terms Acceptance Modal for Downloads */}
+      <TermsAcceptanceModal
+        isOpen={showTermsModal}
+        onClose={handleTermsClose}
+        onAccept={handleTermsAccept}
+        title="Download Confirmation"
+        description={
+          pendingDownload 
+            ? `You are about to download the ${pendingDownload.downloadType} for this build. Please review our terms before proceeding.`
+            : ""
+        }
+        actionText="Continue Download"
+        loading={false}
+      />
     </div>
   );
 }
