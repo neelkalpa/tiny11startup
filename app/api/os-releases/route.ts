@@ -8,6 +8,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from('os_release')
       .select('*')
+      .eq('release', true)
       .order('release_date', { ascending: false });
 
     console.log('Supabase response for all releases:', { data, error });

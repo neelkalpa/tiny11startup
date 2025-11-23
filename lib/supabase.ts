@@ -41,4 +41,5 @@ export interface OSRelease {
   download_link: string;
   build_number: string | null;
   edition: string | null;
+  release: boolean | null;
 }
